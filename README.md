@@ -13,7 +13,7 @@ Add Service Modal
 
 Profile Setup
 
-## ✨ Features
+# ✨ Features
 
 ## 👤 Seller Profile
 

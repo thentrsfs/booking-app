@@ -9,7 +9,7 @@ import { Profile } from "@/types/types"
 const ProfilePage = () => {
   const router = useRouter()
   const supabase = createClient()
-  const { loading, showSidebar, setShowSidebar } = useSeller()
+  const { loading, showSidebar, setShowSidebar, services } = useSeller()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [fetching, setFetching] = useState(true)
 
@@ -79,7 +79,7 @@ const ProfilePage = () => {
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
           <h3 className="text-sm text-gray-500 dark:text-gray-400">Total Services</h3>
-          <p className="text-2xl font-semibold">4</p>
+          <p className="text-2xl font-semibold">{services.length}</p>
         </div>
         <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
           <h3 className="text-sm text-gray-500 dark:text-gray-400">Upcoming Bookings</h3>

@@ -3,10 +3,37 @@
 import { useSeller } from "@/context/SellerContext"
 import { Service } from "@/types/types"
 import AddService from "@/components/AddService"
+import { useRouter } from "next/navigation"
+import { createClient } from "@/utils/supabase/client"
+import { useState, useEffect } from "react"
 
 const ServicesPage = () => {
-  const {services,handleDelete, handleEdit, loading, showSidebar, setShowSidebar, showForm, setShowForm} = useSeller()
-  if(loading) return <div>Loading...</div>
+  const {handleDelete, loading,handleEdit, showSidebar, setShowSidebar, showForm, setShowForm} = useSeller()
+  const router = useRouter()
+  const supabase = createClient()
+  const [services, setServices] = useState<Service[]>([])
+  const [fetching, setFetching] = useState(true)
+
+  const fetchServices = async () => {
+            const {data: {user}} = await supabase.auth.getUser()
+            if(!user) {
+    setServices([]);
+      setFetching(false);
+      router.push('/login')
+      return;
+            }
+            const {data} = await supabase
+              .from('services')
+              .select('*')
+              .eq('seller_id', user.id)
+            setServices(data || [])
+            setFetching(false);
+          }
+
+  useEffect(() => {
+    fetchServices()
+  }, [])
+  if(loading || fetching) return <div>Loading...</div>
   return (
     <div >
       {showSidebar && <div onClick={() => setShowSidebar(false)} className="fixed inset-0 bg-black/40 backdrop-blur-xs z-40"></div>}

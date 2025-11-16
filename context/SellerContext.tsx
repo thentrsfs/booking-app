@@ -29,6 +29,8 @@ type SellerContextType = {
     handleEdit: (service: Service) => void;
     handleDelete: (serviceId: string) => Promise<void>;
     resetForm: () => void;
+    handleThemeToggle: (newTheme: "light" | "dark") => void;
+    theme: "light" | "dark";
 }
 
 const SellerContext = createContext<SellerContextType | undefined>(undefined);
@@ -47,6 +49,7 @@ export const SellerProvider = ({ children }: { children: React.ReactNode }) => {
     const [services, setServices] = useState<Service[]>([])
     const [editing, setEditing] = useState(false)
     const [editingService, setEditingService] = useState<Service | null>(null)
+    const [theme, setTheme] = useState<"light" | "dark">('light')
     const [loading, setLoading] = useState(true)
 
     const resetForm = () => {
@@ -71,6 +74,12 @@ export const SellerProvider = ({ children }: { children: React.ReactNode }) => {
   setShowForm(true)
 }
 
+const handleThemeToggle = (newTheme: "light" | "dark") => {
+  setTheme(newTheme)
+  document.documentElement.setAttribute("data-theme", newTheme)
+  localStorage.setItem("theme", newTheme)
+}
+
     const handleDelete = async (serviceId: string) => {
       const {error} = await supabase.from('services').delete().eq('id', serviceId)
       if(error) {
@@ -80,7 +89,7 @@ export const SellerProvider = ({ children }: { children: React.ReactNode }) => {
       }
     }
     const fetchServices = async () => {
-        setLoading(true)
+      setLoading(true);
             const {data: {user}} = await supabase.auth.getUser()
             if(!user) {
     setServices([]);
@@ -88,12 +97,11 @@ export const SellerProvider = ({ children }: { children: React.ReactNode }) => {
       router.push('/login')
       return;
             }
-            const {data, error} = await supabase
+            const {data} = await supabase
               .from('services')
               .select('*')
               .eq('seller_id', user.id)
-            if(error) alert('Error fetching services: ' + error.message)
-            else setServices(data || [])
+            setServices(data || [])
             setLoading(false)
           }
 
@@ -153,11 +161,27 @@ export const SellerProvider = ({ children }: { children: React.ReactNode }) => {
   }
 }
 
+useEffect(() => {
+  const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null
+  if(savedTheme) {
+    setTheme(savedTheme)
+    document.documentElement.setAttribute("data-theme", savedTheme)
+  }
+},[])
+
     useEffect(() => {
         fetchServices()
+        const {data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+          if(session?.user){
+            fetchServices()
+          } else {
+            setServices([])
+          }
+        })
+        return () => { subscription.unsubscribe() }
     }, [])
     return (
-        <SellerContext.Provider value={{services, resetForm, showForm,handleEdit, handleDelete, setShowForm,formData, setFormData, loading, fetchServices, addService, showSidebar, setShowSidebar}}>
+        <SellerContext.Provider value={{services, handleThemeToggle, theme, resetForm, showForm,handleEdit, handleDelete, setShowForm,formData, setFormData, loading, fetchServices, addService, showSidebar, setShowSidebar}}>
             {children}
         </SellerContext.Provider>
     )

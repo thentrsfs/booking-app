@@ -42,11 +42,12 @@ const ServicesPage = () => {
       <main>
         <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold text-gray-900 dark:text-white text-center">All Services</h1>
-        <button className="bg-primary hover:bg-primary-hover text-white font-medium text-sm py-2 px-4 rounded-lg" onClick={() => setShowForm(true)}>Add Service</button>
+        <button className="bg-primary hover:bg-primary-hover transition-all duration-300 cursor-pointer text-white font-medium text-sm py-2 px-4 rounded-lg" onClick={() => setShowForm(true)}>Add Service</button>
         </div>
-        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mb-2">
+        {services.length === 0 && <p className="text-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">No services found. Click <span className="font-semibold cursor-pointer" onClick={() => setShowForm(true)}>{'"Add Service"'}</span> to create one.</p> }
+        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-2">
         {services.map((service : Service) => (
-          <li key={service.id} className="flex flex-col border border-gray-300 dark:border-gray-700 shadow-sm p-4 rounded-lg">
+          <li key={service.id} className="flex flex-col border border-gray-300 dark:border-gray-700 dark:bg-gray-800 shadow-sm p-4 rounded-lg ">
             <div className="flex flex-col gap-1 mb-4">
             <h2 className="font-bold text-xl mb-2">{service.name}</h2>
             <p className="text-gray-500">{service.description}</p>
@@ -54,8 +55,8 @@ const ServicesPage = () => {
             <p className="text-gray-500 dark:text-gray-400">Duration: {service.duration} mins</p>
             </div>
           <div className="flex gap-2">
-            <button className="bg-primary hover:bg-primary-hover text-white font-medium text-sm py-2 px-4 rounded-lg" onClick={() => handleEdit(service)}>Edit</button>
-            <button className="bg-red-500 hover:bg-red-700 text-white font-medium text-sm py-2 px-4 rounded-lg" onClick={() => handleDelete(service.id)}>Delete</button>
+            <button className="bg-primary hover:bg-primary-hover text-white font-medium text-sm py-2 px-4 rounded-lg transition-all duration-300 cursor-pointer" onClick={() => handleEdit(service)}>Edit</button>
+            <button className="bg-red-500 hover:bg-red-700 text-white font-medium text-sm py-2 px-4 rounded-lg transition-all duration-300 cursor-pointer" onClick={() => handleDelete(service.id)}>Delete</button>
           </div>
           </li>
         ))}

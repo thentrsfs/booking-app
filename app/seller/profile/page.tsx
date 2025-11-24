@@ -55,49 +55,61 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 max-w-xl mx-auto">
       <h1 className="text-2xl font-semibold text-center">Profile Dashboard</h1>
       {showSidebar && <div onClick={() => setShowSidebar(false)} className="fixed inset-0 bg-black/40 backdrop-blur-xs z-40"></div>}
-      <div className="flex flex-col sm:flex-row items-center gap-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+      <div className="flex flex-col sm:flex-row items-center gap-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
         <Image
           src={profile.avatar_url || "/avatars/default.jpg"}
           alt="User avatar"
           width={120}
           height={120}
-          className="rounded-full w-32 h-32 object-cover"
+          className="rounded-full flex-shrink-0 w-28 h-28 object-cover shadow"
           priority
         />
-        <div className="text-center sm:text-left">
-          <h2 className="text-xl font-semibold">{profile.name}</h2>
-          <p className="text-gray-500 dark:text-gray-400 capitalize">{profile.role}</p>
-          {profile.bio && <p className="mt-2 text-gray-600 dark:text-gray-300">{profile.bio}</p>}
-          <p className="mt-1 text-gray-500 dark:text-gray-400">📞 {profile.phone}</p>
-        </div>
+         {/* Name + Role */}
+  <div className="text-center">
+    <h2 className="text-xl font-semibold">{profile.name}</h2>
+    <p className="text-sm text-gray-400 capitalize">{profile.role}</p>
+  </div>
+
+  {/* Info List */}
+  <div className="w-full space-y-2 text-text dark:text-text-dark">
+    <div className="flex items-center gap-3 bg-gray-400/15 dark:bg-gray-500/30 p-3 rounded-lg">
+      <span className="text-pink-400">👤</span>
+      <p className="text-sm">{profile.name || "Not provided"}</p>
+    </div>
+
+    <div className="flex items-center gap-3 bg-gray-400/15 dark:bg-gray-500/30 p-3 rounded-lg">
+      <span className="text-pink-400">📞</span>
+      <p className="text-sm">{profile.phone || "No phone added"}</p>
+    </div>
+  </div>
       </div>
 
       {/* 📊 Stats */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-        <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
+      <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow text-center flex flex-col items-center justify-center">
           <h3 className="text-sm text-gray-500 dark:text-gray-400">Total Services</h3>
           <p className="text-2xl font-semibold">{services.length}</p>
         </div>
-        <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
+        <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow text-center flex flex-col items-center justify-center">
           <h3 className="text-sm text-gray-500 dark:text-gray-400">Upcoming Bookings</h3>
           <p className="text-2xl font-semibold">12</p>
         </div>
       </div>
 
       {/* Buttons */}
-      <div className="flex gap-4 justify-between">
+      <div className="flex gap-3">
         <button
           onClick={() => router.push('/seller/services')}
-          className="bg-primary hover:bg-primary-hover max-sm:flex-1 text-white font-semibold py-2 px-4 rounded-lg"
+          className="bg-primary hover:bg-primary-hover max-sm:flex-1 text-white font-semibold py-2 px-4 rounded-lg transiton duration-300 cursor-pointer"
         >
           Manage Services
         </button>
         <button
           onClick={() => router.push('/seller/profile/edit')}
-          className="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-semibold py-2 px-4 rounded-lg"
+          className="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 text-gray-800 dark:text-gray-200 font-semibold py-2 px-4 rounded-lg transiton duration-300 cursor-pointer dark:hover:bg-gray-600"
         >
           Edit Profile
         </button>

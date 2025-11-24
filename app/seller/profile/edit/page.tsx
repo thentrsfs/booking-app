@@ -99,7 +99,7 @@ useEffect(() => {
 
  return (
     <div className="min-h-screen p-4 bg-background dark:bg-background-dark text-text dark:text-text-dark">
-      <h1 className="text-2xl font-semibold text-center mb-4">Edit Profile</h1>
+      <h1 className="text-2xl font-semibold text-center mb-4 transiton duration-300 cursor-pointer">Edit Profile</h1>
       {showSidebar && <div onClick={() => setShowSidebar(false)} className="fixed inset-0 bg-black/40 backdrop-blur-xs z-40"></div>}
       <div className="flex flex-col items-center gap-4 mb-6">
         <div
@@ -173,11 +173,11 @@ useEffect(() => {
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           className="border border-gray-400 dark:border-gray-600 p-2 rounded-lg
- dark:bg-gray-800 dark:focus:outline-white focus:outline-1"
+ dark:bg-gray-800 dark:focus:outline-white focus:outline-1 hover:shadow-md hover:border-primary transition duration-300"
         />
         </div>
         <div className="flex flex-col gap-1">
-        <label htmlFor="phone" className="text-sm text-gray-700 font-medium dark:text-gray-300">Phone</label>
+        <label htmlFor="phone" className="text-sm text-gray-700 font-medium dark:text-gray-300 ">Phone</label>
         <input
           id="phone"
           type="text"
@@ -185,7 +185,7 @@ useEffect(() => {
           value={formData.phone}
           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
           className="border border-gray-400 dark:border-gray-600 p-2 rounded-lg
- dark:bg-gray-800 dark:focus:outline-white focus:outline-1"
+ dark:bg-gray-800 dark:focus:outline-white focus:outline-1 hover:shadow-md hover:border-primary transition duration-300"
         />
         </div>
         <div className="flex flex-col gap-1">
@@ -195,19 +195,19 @@ useEffect(() => {
           placeholder="Short bio..."
           value={formData.bio}
           onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-          className="border border-gray-400 dark:border-gray-600 p-2 rounded-lg dark:focus:outline-white focus:outline-1 dark:bg-gray-800 resize-none"
+          className="border border-gray-400 dark:border-gray-600 p-2 rounded-lg dark:focus:outline-white focus:outline-1 dark:bg-gray-800 resize-none hover:shadow-md hover:border-primary transition duration-300"
         />
 </div>
         <button
           onClick={handleSave}
           disabled={saving}
-          className="bg-primary hover:bg-primary-hover text-white font-semibold py-2 px-4 rounded-lg"
+          className="bg-primary hover:bg-primary-hover text-white font-semibold py-2 px-4 transiton duration-300 cursor-pointer rounded-lg"
         >
           {saving ? "Saving..." : "Save Changes"}
         </button>
         <button
           onClick={() => router.push('/seller/profile')}
-          className="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 font-semibold py-2 px-4 rounded-lg"
+          className="bg-gray-100 dark:bg-gray-700 text-gray-800 transiton duration-300 cursor-pointer hover:bg-gray-200 dark:text-gray-200 dark:hover:bg-gray-600 font-semibold py-2 px-4 rounded-lg"
         >
           Cancel
         </button>

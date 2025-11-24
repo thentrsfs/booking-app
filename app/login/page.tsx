@@ -28,7 +28,7 @@ const LoginPage = () => {
       return
     }
     if(isSignUp) {
-      const {data, error} = await supabase.auth.signUp({
+      const {error} = await supabase.auth.signUp({
         email,
         password
       })
@@ -59,8 +59,10 @@ const LoginPage = () => {
 
       if(profile?.role === 'seller') {
         router.push('/seller')
-      } else {
+      } else if(profile?.role === 'buyer') {
         router.push('/buyer')
+      } else {
+        router.push('/setup-profile')
       }
     }
     setLoading(false);

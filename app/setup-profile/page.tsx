@@ -3,16 +3,12 @@ import {useState, useEffect} from "react"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/utils/supabase/client"
 import { ProfileInputSchema, ProfileInput } from "@/types/types"
-import Header from "@/components/Header"
+import Logo from "@/components/Logo"
 import AvatarSelector from "@/components/AvatarSelector"
-import NavSidebar from "@/components/NavSidebar"
-import { useSeller } from "@/context/SellerContext"
-import { file } from "zod"
 
 const SetupProfilePage = () => {
     const supabase = createClient()
     const router = useRouter()
-    const { showSidebar, setShowSidebar} = useSeller()
     const [formData, setFormData] = useState<ProfileInput>({
         name: '',
         phone: '',
@@ -81,22 +77,32 @@ const SetupProfilePage = () => {
     }
     if(loading) return <div>Loading...</div>
   return (
-  <div className="min-h-screen p-4 bg-background dark:bg-background-dark text-text dark:text-text-dark font-sans">
+  <div className="min-h-screen p-4 bg-background dark:bg-background-dark text-text dark:text-text-dark font-sans flex flex-col gap-6 max-w-2xl mx-auto">
      <header>
-        <Header setShowSidebar={setShowSidebar} />
-      <h1 className="text-2xl font-semibold text-center">Set up your profile</h1>
+   <Logo/>
+      <h1 className="text-2xl font-semibold text-center mt-4 text-text dark:text-text-dark">Set up your profile</h1>
         </header>
-        <NavSidebar showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
+        <div className="space-y-8 p-6 bg-white dark:bg-gray-800 shadow-md rounded-xl">
       <AvatarSelector  value={formData.avatarFile || formData.avatar_url} onChange={fileOrUrl => setFormData({...formData, avatarFile: fileOrUrl instanceof File ? fileOrUrl : null, avatar_url: typeof fileOrUrl === 'string' ? fileOrUrl : null})} />
         <div className="flex flex-col gap-4 max-w-md mx-auto">
-      <select value={formData.role} onChange={e => setFormData({...formData, role: e.target.value as 'buyer' | 'seller'})}>
+          <div className="flex flex-col gap-1">
+        <label htmlFor="role" className="text-sm text-gray-700 font-medium dark:text-gray-300">Role</label>
+      <select id="role" className="border border-gray-400 dark:border-gray-600 dark:focus:outline-white focus:outline-1 p-2 rounded-lg bg-white dark:bg-gray-700" value={formData.role} onChange={e => setFormData({...formData, role: e.target.value as 'buyer' | 'seller'})}>
         <option value="buyer">Buyer</option>
         <option value="seller">Seller</option>
       </select>
-      <input value={formData.name} type="text" placeholder="Ime" onChange={e => setFormData({...formData, name: e.target.value})} />
-      <input value={formData.phone} type="text" placeholder="Telefon" onChange={e => setFormData({...formData, phone: e.target.value})} />
-      <button onClick={handleSubmit}>Sačuvaj profil</button>
+      </div>
+      <div className="flex flex-col gap-1">
+        <label htmlFor="name" className="text-sm text-gray-700 font-medium dark:text-gray-300">Name</label>
+      <input id="name" className="border border-gray-400 dark:border-gray-600 dark:focus:outline-white focus:outline-1 p-2 rounded-lg bg-white dark:bg-gray-700" value={formData.name} type="text" placeholder="Name" onChange={e => setFormData({...formData, name: e.target.value})} />
+      </div>
+      <div className="flex flex-col gap-1">
+        <label htmlFor="phone" className="text-sm text-gray-700 font-medium dark:text-gray-300">Phone</label>
+      <input value={formData.phone} type="text" placeholder="Phone (optional)" className="border border-gray-400 dark:border-gray-600 dark:focus:outline-white focus:outline-1 p-2 rounded-lg bg-white dark:bg-gray-700" onChange={e => setFormData({...formData, phone: e.target.value})} />
+      </div>
     </div>
+    </div>
+      <button className="bg-primary text-white font-semibold py-2 px-4 rounded-lg" onClick={handleSubmit}>Save Profile</button>
     </div>
   )
 }

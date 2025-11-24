@@ -30,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-theme="light">
       <SellerProvider>
       <body
         className={`${geistSans.variable} ${poppins.variable} ${geistMono.variable} antialiased dark:bg-black`}>

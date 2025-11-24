@@ -2,14 +2,16 @@
 import { useSeller } from '@/context/SellerContext'
 import { useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
-import { set } from 'zod'
+import { useRouter } from 'next/navigation'
 
 const SettingsPage = () => {
-    const { loading, showSidebar, setShowSidebar, theme, handleThemeToggle } = useSeller()
+    const {showSidebar, setShowSidebar, theme, handleThemeToggle } = useSeller()
     const supabase = createClient()
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     const [msg, setMsg] = useState('')
+    const [loading, setLoading] = useState(false)
+    const router = useRouter()
 
     const handlePasswordChange = async (e : React.FormEvent) => {
       e.preventDefault()
@@ -24,47 +26,72 @@ const SettingsPage = () => {
     }
 
     const handleDeleteAccount = async () => {
-      const confirmDelete = confirm('Are you sure you want to delete your account? This action cannot be undone.')
-      if(!confirmDelete) return
-      const {error} = await supabase.rpc('delete_user_account')
+  // get the current user from supabase auth
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+  const userId = userData?.user?.id;
 
-      if(error) {
-        setMsg(`Error: ${error.message}`)
-      } else {
-        setMsg('Account deleted successfully')
-        supabase.auth.signOut()
-      }
-    }
+  if (userError || !userId) {
+    alert("No authenticated user found.");
+    return;
+  }
+
+  const confirm = window.confirm("Are you sure you want to delete your account? This action cannot be undone.");
+  if (!confirm) return;
+
+  const res = await fetch("/api/delete-account", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId }),
+  });
+
+  const data = await res.json();
+
+  if (data.success) {
+    alert("Account deleted");
+    router.push("/login");
+  } else {
+    alert("Error deleting account: " + data.error);
+  }
+};
+
     if (loading) return <div>Loading...</div>
   return (
-         <div className="p-6 max-w-xl mx-auto flex flex-col gap-8">
+    <div className='flex flex-col gap-4 max-w-xl mx-auto'>
+    <h1 className="text-2xl font-semibold text-text dark:text-text-dark text-center">Settings</h1>
+         <div className=" bg-white dark:bg-gray-800 shadow-md rounded-xl p-6 space-y-10">
+
 {showSidebar && <div onClick={() => setShowSidebar(false)} className="fixed inset-0 bg-black/40 backdrop-blur-xs z-40"></div>}
+
       {/* Theme */}
-      <section >
-        <h2 className="text-xl font-semibold">Appearance</h2>
-        <div className="flex items-center gap-4 mt-3">
-          <label className="flex items-center gap-2">
-            <input
-              type="radio"
-              name="theme"
-              value="light"
-              checked={theme === 'light'}
-              onChange={() => handleThemeToggle('light')}
-            />
-            Light
-          </label>
-          <label className="flex items-center gap-2">
-            <input
-              type="radio"
-              name="theme"
-              value="dark"
-              checked={theme === 'dark'}
-              onChange={() => handleThemeToggle('dark')}
-            />
-            Dark
-          </label>
-        </div>
-      </section>
+       <section className="space-y-4">
+    <h2 className="text-xl font-semibold">Appearance</h2>
+
+    <div className="flex gap-6">
+      <label className="flex items-center gap-2 cursor-pointer">
+        <input
+          type="radio"
+          name="theme"
+          value="light"
+          checked={theme === "light"}
+          onChange={() => handleThemeToggle("light")}
+          className="w-4 h-4"
+        />
+        <span>Light</span>
+      </label>
+
+      <label className="flex items-center gap-2 cursor-pointer">
+        <input
+          type="radio"
+          name="theme"
+          value="dark"
+          checked={theme === "dark"}
+          onChange={() => handleThemeToggle("dark")}
+          className="w-4 h-4"
+        />
+        <span>Dark</span>
+      </label>
+    </div>
+  </section>
 
       {/* Change password */}
       <section>
@@ -76,12 +103,14 @@ const SettingsPage = () => {
             placeholder="New Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="border p-2 rounded"
+            className="border border-gray-400 dark:border-gray-600 p-2 rounded-lg
+ dark:bg-gray-800 dark:focus:outline-white focus:outline-1 hover:shadow-md hover:border-primary transition duration-300"
           />
-          <input type="password" placeholder="Confirm Password" className="border p-2 rounded" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+          <input type="password" placeholder="Confirm Password" className="border border-gray-400 dark:border-gray-600 p-2 rounded-lg
+ dark:bg-gray-800 dark:focus:outline-white focus:outline-1 hover:shadow-md hover:border-primary transition duration-300" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
           <button
             type="submit"
-            className="bg-primary text-white font-semibold py-2 px-4 rounded"
+            className="bg-primary hover:bg-primary-hover transiton duration-300 cursor-pointer text-white font-semibold py-2 px-4 rounded-lg"
           >
             Change Password
           </button>
@@ -94,13 +123,14 @@ const SettingsPage = () => {
 
         <button
           onClick={handleDeleteAccount}
-          className="mt-3 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded"
+          className="mt-3 bg-red-600 hover:bg-red-700 transition duration-300 cursor-pointer text-white font-semibold py-2 px-4 rounded-lg"
         >
           Delete Account
         </button>
       </section>
 
       {msg && <p className="text-center text-sm mt-4 text-gray-600">{msg}</p>}
+    </div>
     </div>
   )
 }

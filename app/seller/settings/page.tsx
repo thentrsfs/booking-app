@@ -5,12 +5,11 @@ import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 
 const SettingsPage = () => {
-    const {showSidebar, setShowSidebar, theme, handleThemeToggle } = useSeller()
+    const {showSidebar, setShowSidebar, theme, handleThemeToggle, loading } = useSeller()
     const supabase = createClient()
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     const [msg, setMsg] = useState('')
-    const [loading, setLoading] = useState(false)
     const router = useRouter()
 
     const handlePasswordChange = async (e : React.FormEvent) => {

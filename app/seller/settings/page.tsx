@@ -115,7 +115,6 @@ const SettingsPage = () => {
           </button>
         </form>
       </section>
-
       {/* Delete account */}
       <section>
         <h2 className="text-xl font-semibold text-red-600">Danger Zone</h2>

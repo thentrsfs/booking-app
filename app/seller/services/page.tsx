@@ -3,37 +3,17 @@
 import { useSeller } from "@/context/SellerContext"
 import { Service } from "@/types/types"
 import AddService from "@/components/AddService"
-import { useRouter } from "next/navigation"
-import { createClient } from "@/utils/supabase/client"
-import { useState, useEffect } from "react"
+import { useEffect } from "react"
+import Loader from "@/components/Loader"
+import Services from "@/components/Services"
 
 const ServicesPage = () => {
-  const {handleDelete, loading,handleEdit, showSidebar, setShowSidebar, showForm, setShowForm} = useSeller()
-  const router = useRouter()
-  const supabase = createClient()
-  const [services, setServices] = useState<Service[]>([])
-  const [fetching, setFetching] = useState(true)
-
-  const fetchServices = async () => {
-            const {data: {user}} = await supabase.auth.getUser()
-            if(!user) {
-    setServices([]);
-      setFetching(false);
-      router.push('/login')
-      return;
-            }
-            const {data} = await supabase
-              .from('services')
-              .select('*')
-              .eq('seller_id', user.id)
-            setServices(data || [])
-            setFetching(false);
-          }
+  const {services , fetchServices, loading, showSidebar, setShowSidebar, showForm, setShowForm} = useSeller()
 
   useEffect(() => {
     fetchServices()
   }, [])
-  if(loading || fetching) return <div>Loading...</div>
+  if(loading) return <Loader/>
   return (
     <div >
       {showSidebar && <div onClick={() => setShowSidebar(false)} className="fixed inset-0 bg-black/40 backdrop-blur-xs z-40"></div>}
@@ -45,22 +25,7 @@ const ServicesPage = () => {
         <button className="bg-primary hover:bg-primary-hover transition-all duration-300 cursor-pointer text-white font-medium text-sm py-2 px-4 rounded-lg" onClick={() => setShowForm(true)}>Add Service</button>
         </div>
         {services.length === 0 && <p className="text-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">No services found. Click <span className="font-semibold cursor-pointer" onClick={() => setShowForm(true)}>{'"Add Service"'}</span> to create one.</p> }
-        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-2">
-        {services.map((service : Service) => (
-          <li key={service.id} className="flex flex-col border border-gray-300 dark:border-gray-700 dark:bg-gray-800 shadow-sm p-4 rounded-lg ">
-            <div className="flex flex-col gap-1 mb-4">
-            <h2 className="font-bold text-xl mb-2">{service.name}</h2>
-            <p className="text-gray-500">{service.description}</p>
-            <p className="font-semibold dark:text-gray-100 text-lg">${service.price}</p>
-            <p className="text-gray-500 dark:text-gray-400">Duration: {service.duration} mins</p>
-            </div>
-          <div className="flex gap-2">
-            <button className="bg-primary hover:bg-primary-hover text-white font-medium text-sm py-2 px-4 rounded-lg transition-all duration-300 cursor-pointer" onClick={() => handleEdit(service)}>Edit</button>
-            <button className="bg-red-500 hover:bg-red-700 text-white font-medium text-sm py-2 px-4 rounded-lg transition-all duration-300 cursor-pointer" onClick={() => handleDelete(service.id)}>Delete</button>
-          </div>
-          </li>
-        ))}
-        </ul>
+        <Services />
       </main>
     </div>
   )

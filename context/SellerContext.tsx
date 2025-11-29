@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useEffect } from "react"
 import { createClient } from "@/utils/supabase/client"
 import { Service, ServiceInputSchema} from "@/types/types"
 import { useRouter } from "next/navigation"
+import { useTheme } from "next-themes"
 
 type SellerContextType = {
     services: Service[];
@@ -18,19 +19,24 @@ type SellerContextType = {
         name: string;
         description: string;
         price: string;
-        duration: string;
+        duration_value: string;
+        duration_unit: 'minutes' | 'hours' | 'days';
     };
     setFormData: React.Dispatch<React.SetStateAction<{
         name: string;
         description: string;
         price: string;
-        duration: string;
+        duration_value: string;
+        duration_unit: 'minutes' | 'hours' | 'days';
     }>>;
     handleEdit: (service: Service) => void;
     handleDelete: (serviceId: string) => Promise<void>;
     resetForm: () => void;
-    handleThemeToggle: (newTheme: "light" | "dark") => void;
-    theme: "light" | "dark";
+    handleOpenDeleteModal: (serviceId: string) => void;
+    openDeleteModal: boolean;
+    setOpenDeleteModal: React.Dispatch<React.SetStateAction<boolean>>;
+    deleteServiceId: string;
+    handleThemeToggle: () => void;
 }
 
 const SellerContext = createContext<SellerContextType | undefined>(undefined);
@@ -38,18 +44,27 @@ const SellerContext = createContext<SellerContextType | undefined>(undefined);
 export const SellerProvider = ({ children }: { children: React.ReactNode }) => {
     const supabase = createClient()
     const router = useRouter()
+    const { theme, setTheme } = useTheme();
     const [showForm, setShowForm] = useState(false)
     const [showSidebar, setShowSidebar] = useState(false)
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<{
+        name: string;
+        description: string;
+        price: string;
+        duration_value: string;
+        duration_unit: 'minutes' | 'hours' | 'days';
+    }>({
         name: '',
         description: '',
         price: '',
-        duration: ''
+        duration_value: '',
+        duration_unit: 'minutes'
     })
     const [services, setServices] = useState<Service[]>([])
     const [editing, setEditing] = useState(false)
     const [editingService, setEditingService] = useState<Service | null>(null)
-    const [theme, setTheme] = useState<"light" | "dark">('light')
+    const [openDeleteModal, setOpenDeleteModal] = useState(false)
+    const [deleteServiceId, setDeleteServiceId] = useState<string>('')
     const [loading, setLoading] = useState(true)
 
     const resetForm = () => {
@@ -57,10 +72,15 @@ export const SellerProvider = ({ children }: { children: React.ReactNode }) => {
         name: '',
         description: '',
         price: '',
-        duration: ''
+        duration_value: '',
+        duration_unit: 'minutes'
       })
       setEditing(false)
       setEditingService(null)
+    }
+
+    const handleThemeToggle = () => {
+      setTheme(theme === "light" ? "dark" : "light");
     }
     const handleEdit = (service: Service) => {
   setEditing(true)
@@ -69,24 +89,25 @@ export const SellerProvider = ({ children }: { children: React.ReactNode }) => {
     name: service.name,
     description: service.description,
     price: service.price.toString(),
-    duration: service.duration.toString()
+    duration_value: service.duration_value.toString(),
+    duration_unit: 'minutes'
   })
   setShowForm(true)
 }
 
-const handleThemeToggle = (newTheme: "light" | "dark") => {
-  setTheme(newTheme)
-  document.documentElement.setAttribute("data-theme", newTheme)
-  localStorage.setItem("theme", newTheme)
+const handleOpenDeleteModal = (serviceId: string) => {
+  setDeleteServiceId(serviceId)
+  setOpenDeleteModal(true)
 }
-
     const handleDelete = async (serviceId: string) => {
+      if(!serviceId) return;
       const {error} = await supabase.from('services').delete().eq('id', serviceId)
       if(error) {
         alert('Error deleting service: ' + error.message)
-      } else {
-        setServices(services.filter(s => s.id !== serviceId))
       }
+      setServices(services.filter(s => s.id !== serviceId))
+      setOpenDeleteModal(false)
+      setDeleteServiceId('')
     }
     const fetchServices = async () => {
       setLoading(true);
@@ -125,7 +146,8 @@ const handleThemeToggle = (newTheme: "light" | "dark") => {
         name: result.data.name,
         description: result.data.description,
         price: result.data.price,
-        duration: result.data.duration,
+        duration_value: result.data.duration_value,
+        duration_unit: result.data.duration_unit
       })
       .eq('id', editingService.id)
 
@@ -161,14 +183,6 @@ const handleThemeToggle = (newTheme: "light" | "dark") => {
   }
 }
 
-useEffect(() => {
-  const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null
-  if(savedTheme) {
-    setTheme(savedTheme)
-    document.documentElement.setAttribute("data-theme", savedTheme)
-  }
-},[])
-
     useEffect(() => {
         fetchServices()
         const {data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -181,7 +195,7 @@ useEffect(() => {
         return () => { subscription.unsubscribe() }
     }, [])
     return (
-        <SellerContext.Provider value={{services, handleThemeToggle, theme, resetForm, showForm,handleEdit, handleDelete, setShowForm,formData, setFormData, loading, fetchServices, addService, showSidebar, setShowSidebar}}>
+        <SellerContext.Provider value={{services,deleteServiceId, handleThemeToggle, handleOpenDeleteModal,setOpenDeleteModal, openDeleteModal, resetForm, showForm,handleEdit, handleDelete, setShowForm,formData, setFormData, loading, fetchServices, addService, showSidebar, setShowSidebar}}>
             {children}
         </SellerContext.Provider>
     )

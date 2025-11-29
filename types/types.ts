@@ -17,7 +17,8 @@ export const ServiceSchema = z.object({
     seller_id: z.uuid(),
     name: z.string().min(1, {message: 'Service name is required.'}),
     description: z.string().min(1, {message: 'Description is required.'}),
-    duration: z.coerce.number().min(1, {message: 'Duration must be at least 1 minute.'}),
+    duration_value: z.coerce.number().min(1, {message: 'Duration must be at least 1 minute.'}),
+    duration_unit: z.enum(['minutes', 'hours', 'days']),
     price: z.coerce.number().min(0, {message: 'Price cannot be negative.'}) ,
     created_at: z.string(),
 })

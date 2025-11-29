@@ -3,9 +3,11 @@ import { useSeller } from '@/context/SellerContext'
 import { useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
+import Loader from '@/components/Loader'
+import ThemeToggle from '@/components/ThemeToggle'
 
 const SettingsPage = () => {
-    const {showSidebar, setShowSidebar, theme, handleThemeToggle, loading } = useSeller()
+    const {showSidebar, setShowSidebar, loading } = useSeller()
     const supabase = createClient()
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
@@ -53,7 +55,7 @@ const SettingsPage = () => {
   }
 };
 
-    if (loading) return <div>Loading...</div>
+    if (loading) return <Loader/>
   return (
     <div className='flex flex-col gap-4 max-w-xl mx-auto'>
     <h1 className="text-2xl font-semibold text-text dark:text-text-dark text-center">Settings</h1>
@@ -64,32 +66,7 @@ const SettingsPage = () => {
       {/* Theme */}
        <section className="space-y-4">
     <h2 className="text-xl font-semibold">Appearance</h2>
-
-    <div className="flex gap-6">
-      <label className="flex items-center gap-2 cursor-pointer">
-        <input
-          type="radio"
-          name="theme"
-          value="light"
-          checked={theme === "light"}
-          onChange={() => handleThemeToggle("light")}
-          className="w-4 h-4"
-        />
-        <span>Light</span>
-      </label>
-
-      <label className="flex items-center gap-2 cursor-pointer">
-        <input
-          type="radio"
-          name="theme"
-          value="dark"
-          checked={theme === "dark"}
-          onChange={() => handleThemeToggle("dark")}
-          className="w-4 h-4"
-        />
-        <span>Dark</span>
-      </label>
-    </div>
+    <ThemeToggle />
   </section>
 
       {/* Change password */}

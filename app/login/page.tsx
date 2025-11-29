@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { createClient } from "@/utils/supabase/client"
 import { AuthSchema } from "@/types/types"
 import Logo from "@/components/Logo"
+import Loader from "@/components/Loader"
 
 const LoginPage = () => {
   const [email, setEmail] = useState("")
@@ -67,6 +68,7 @@ const LoginPage = () => {
     }
     setLoading(false);
   }
+  if(loading) return <Loader/>
   return (
      <div className="min-h-screen flex items-center justify-center bg-background dark:bg-background-dark font-sans p-4">
       <div className="w-full max-w-sm bg-white p-8 rounded-2xl shadow-lg border border-gray-200 dark:bg-[#1e293b] dark:border-gray-700">

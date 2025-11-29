@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import "./globals.css";
 import { SellerProvider } from "@/context/SellerContext";
+import { ThemeProvider } from "next-themes";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,11 +31,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="light">
+    <html lang="en" suppressHydrationWarning>
       <SellerProvider>
       <body
         className={`${geistSans.variable} ${poppins.variable} ${geistMono.variable} antialiased dark:bg-black`}>
+          <ThemeProvider attribute="data-theme" defaultTheme="light" enableSystem={false}>
         {children}
+        </ThemeProvider>
       </body>
       </SellerProvider>
     </html>

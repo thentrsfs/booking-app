@@ -6,6 +6,7 @@ import Image from "next/image"
 import { createClient } from "@/utils/supabase/client"
 import { useSeller } from "@/context/SellerContext"
 import { ProfileInput } from "@/types/types"
+import Loader from "@/components/Loader"
 
 const EditProfilePage = () => {
 const supabase = createClient()
@@ -95,7 +96,7 @@ useEffect(() => {
     }
   }
 
-  if (loading) return <div>Loading...</div>
+  if (loading) return <Loader/>
 
  return (
     <div className="min-h-screen p-4 bg-background dark:bg-background-dark text-text dark:text-text-dark">

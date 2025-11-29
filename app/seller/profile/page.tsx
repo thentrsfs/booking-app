@@ -5,6 +5,7 @@ import Image from "next/image"
 import { createClient } from "@/utils/supabase/client"
 import { useSeller } from "@/context/SellerContext"
 import { Profile } from "@/types/types"
+import Loader from "@/components/Loader"
 
 const ProfilePage = () => {
   const router = useRouter()
@@ -38,7 +39,7 @@ const ProfilePage = () => {
     fetchProfile()
   }, [])
 
-  if (loading || fetching) return <div>Loading...</div>
+  if (loading || fetching) return <Loader/>
 
   if (!profile) {
     return (
